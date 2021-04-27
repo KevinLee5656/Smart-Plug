@@ -19,9 +19,10 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
-  char *ssid = "Energetic101";   // your network SSID (name) 
-  char *pass = "Familee1803";   // your network password
+  char *ssid = "";   // your network SSID (name) 
+  char *pass = "";   // your network password
   int keyIndex = 0;            // your network key Index number (needed only for WEP)
+
   WiFi.mode(WIFI_STA); 
   ThingSpeak.begin(client);  // Initialize ThingSpeak
 
