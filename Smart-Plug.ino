@@ -24,7 +24,7 @@ void writeDisplay(char* message, int x, int y);
 
 unsigned long myChannelNumber = 1372693;
 const char* myWriteAPIKey = "JTU276A6ZM3O5YEI";
-double measuredI, squaredI, sumI = 0, Irms, Power = 0;
+double measuredI, squaredI, sumI = 0, Irms, power = 0;
 int num_current_adc_sample = 0;
 
 void setup() {
@@ -36,19 +36,19 @@ void setup() {
     for(;;);
   }
   display.setTextSize(1);
-  display.setTextColor(BLUE);
   writeDisplay("Booting up!", 0, 0); 
   delay(1000);
   display.clearDisplay();
   
   pinMode(RELAY_PIN, OUTPUT);
-
+  
   char *ssid = "myREZ - Guest";   // your network SSID (name) 
   char *pass = "a12345678";   // your network password
   int keyIndex = 0;            // your network key Index number (needed only for WEP)
 
   WiFi.mode(WIFI_STA); 
   ThingSpeak.begin(client);  // Initialize ThingSpeak
+  
 
   // Connect or reconnect to WiFi
   if(WiFi.status() != WL_CONNECTED) {
@@ -70,21 +70,21 @@ void loop() {
   num_current_adc_sample++;
   if(num_current_adc_sample >= NUM_CURRENT_ADC_SAMPLES) {
     Irms = sqrt(sumI / NUM_CURRENT_ADC_SAMPLES);
-    Power = Irms * 120;
-    ThingSpeak.writeField(myChannelNumber, 1, Irms, myWriteAPIKey);
-    ThingSpeak.writeField(myChannelNumber, 2, Power, myWriteAPIKey);
+    power = Irms * 120;
+    ThingSpeak.writeField(myChannelNumber, 1, (long)Irms, myWriteAPIKey);
+    ThingSpeak.writeField(myChannelNumber, 2, (long)power, myWriteAPIKey);
     num_current_adc_sample = 0;
     sumI = 0;
     writeDisplay("Irms", 0, 0); // kevinlee - add values
     writeDisplay("Power", 0, 1);
   }
   // receive MQTT configuration message for relay
-  if(mqtt_message_received) {
-    digitalWrite(RELAY_PIN, HIGH);
-    display.clearDisplay();
-    writeDisplay("OFF", 0, 0);
-    while(digitalRead(RELAY_PIN)) {} // kevinlee - look for another mqtt message
-  }
+//  if(mqtt_message_received) {
+//    digitalWrite(RELAY_PIN, HIGH);
+//    display.clearDisplay();
+//    writeDisplay("OFF", 0, 0);
+//    while(digitalRead(RELAY_PIN)) {} // kevinlee - look for another mqtt message
+//  }
 }
 
 // 0V = 0, 5V = 4095
