@@ -31,6 +31,7 @@ float getVPP();
 
 unsigned long myChannelNumber = 1372693;
 const char* myWriteAPIKey = "JTU276A6ZM3O5YEI";
+const char* myReadAPIKey = "";////////////////////////////////////////////////////////////ADD READ API KEY HERE///////
 double measuredI, squaredI, sumI = 0, Irms, Vrms, Vpp, power = 0;
 int num_current_adc_sample = 0;
 
@@ -83,6 +84,14 @@ void loop() {
     power = Irms * 120;
     Serial.print("Irms :");
     Serial.println(Irms);
+    
+    int powerOn = ThingSpeak.readLongField(myChannelNumber, 3, myReadAPIKey);
+
+    if (powerOn == 0) {
+      return;
+    }
+
+    
     ThingSpeak.writeField(myChannelNumber, 1, (long)Irms, myWriteAPIKey);
     ThingSpeak.writeField(myChannelNumber, 2, (long)power, myWriteAPIKey);
     num_current_adc_sample = 0;
@@ -111,4 +120,12 @@ double countToCurrent(int adcCount) {
   double voltage = (adcCount-ADC_OFFSET) / MAX_ADC_COUNT * SUPPLY_VOLTAGE;
   double current = abs(voltage - SUPPLY_VOLTAGE/2) / CURRENT_SENSOR_SENSITIVITY;
   return current;
+}
+
+void turnOn() {
+  ThingSpeak.writeField(myChannelNumber, 3, 1, myWriteAPIKey);
+}
+
+void turnOff() {
+  ThingSpeak.writeField(myChannelNumber, 3, 0, myWriteAPIKey);
 }
